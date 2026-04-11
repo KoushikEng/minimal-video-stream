@@ -359,7 +359,7 @@
             <button class="nav-btn prev-btn control-element" onclick="navigate(-1)">&#10094;</button>
             
             <div id="loader"></div>
-            <video id="video-player" controls style="display: none;"></video>
+            <video id="video-player" controls preload="metadata" style="display: none;"></video>
             <img id="image-viewer" src="" style="display: none;">
             
             <button class="nav-btn next-btn control-element" onclick="navigate(1)">&#10095;</button>
@@ -434,7 +434,7 @@
 
             if (item.type === 'video') {
                 videoPlayer.src = "/media/" + item.path;
-                videoPlayer.oncanplay = () => {
+                videoPlayer.onloadeddata = () => {
                     loader.style.display = 'none';
                     videoPlayer.style.display = 'block';
                     videoPlayer.play().catch(e => {});

@@ -5,9 +5,7 @@ from werkzeug.utils import secure_filename
 from config import MEDIA_DIR, THUMBNAIL_DIR, PREVIEW_DIR, VIDEO_EXTS, IMAGE_EXTS, NO_AUTH
 from quart_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
-
-# CHANGED: Import from Quart instead of Flask
-from quart import Quart, render_template, send_from_directory, request
+from quart import Quart, render_template, send_from_directory, request, send_file
 
 
 app = Quart(__name__, static_folder="public", static_url_path='')
@@ -130,8 +128,11 @@ async def index():
 @app.route('/media/<path:filename>')
 @auth.login_required
 async def serve_media(filename):
-    # send_from_directory is async in Quart - this is the KEY fix for blocking
-    return await send_from_directory(MEDIA_DIR, filename)
+    full_path = path.join(MEDIA_DIR, filename)
+    if not path.isfile(full_path):
+        return {'error': 'File not found'}, 404
+
+    return await send_file(full_path, conditional=True)
 
 @app.route('/previews/<path:filename>')
 @auth.login_required
