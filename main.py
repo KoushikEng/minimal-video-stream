@@ -25,12 +25,14 @@ if __name__ == '__main__':
         print("Skipping preprocessing.")
     else:
         try:
-            from librifygen import generate_previews, generate_thumbnails
-            
             if args.preprocessing == 'only-thumbnails':
+                from librifygen import generate_thumbnails
+
                 print("Generating thumbnails only...")
                 generate_thumbnails(MEDIA_DIR, THUMBNAIL_DIR)
             else:
+                from librifygen import generate_previews, generate_thumbnails
+
                 print("Generating previews and thumbnails...")
                 generate_previews(MEDIA_DIR, PREVIEW_DIR)
                 generate_thumbnails(MEDIA_DIR, THUMBNAIL_DIR)
