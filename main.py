@@ -1,5 +1,5 @@
 import argparse
-from config import set_media_dir
+from config import set_media_dir, set_no_auth
 
 parser = argparse.ArgumentParser("StreamLocal - Local Media Streaming Server")
 parser.add_argument('dir', nargs='?', type=str)
@@ -7,9 +7,13 @@ parser.add_argument('--host', '-u', default='0.0.0.0', help="Host to run on (def
 parser.add_argument('--port', '-p', type=int, default=80, help="Port to run on (default: 80)")
 parser.add_argument('--dev', action='store_true')
 parser.add_argument('--preprocessing', '-pr', type=str, choices=['force', 'skip', 'only-thumbnails'], default='force', help="Preprocessing mode: force (default) or skip")
+parser.add_argument('--no-auth', '-na', action='store_true', help="Disable authentication")
 args = parser.parse_args()
 
 set_media_dir(args.dir)
+if args.no_auth:
+    print("Authentication disabled.")
+    set_no_auth(True)
 
 from config import MEDIA_DIR, THUMBNAIL_DIR, PREVIEW_DIR, VIDEO_EXTS, IMAGE_EXTS
 from server import app

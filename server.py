@@ -2,7 +2,7 @@ from asyncio import get_running_loop
 from sys import platform
 from os import path, listdir, sep, walk
 from werkzeug.utils import secure_filename
-from config import MEDIA_DIR, THUMBNAIL_DIR, PREVIEW_DIR, VIDEO_EXTS, IMAGE_EXTS
+from config import MEDIA_DIR, THUMBNAIL_DIR, PREVIEW_DIR, VIDEO_EXTS, IMAGE_EXTS, NO_AUTH
 from quart_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -15,14 +15,26 @@ app = Quart(__name__, static_folder="public", static_url_path='')
 app.secret_key = 'my_super_secret_key' 
 auth = HTTPBasicAuth()
 
-users = {
-    "me": generate_password_hash("password")
-}
+users = {}
+if not NO_AUTH:
+    try:
+        with open('users.txt', 'r') as f:
+            for line in f:
+                if line.startswith('#') or ':' not in line:
+                    continue  # Skip comments and malformed lines
+                username, password = line.strip().split(':', 1)
+                users[username] = generate_password_hash(password)
+    except FileNotFoundError:
+        print("Warning: users.txt not found. Authentication disabled.")
+        exit(1)
 
 @auth.verify_password
 def verify_password(username, password):
+    if NO_AUTH:
+        return "guest"
     if username in users and check_password_hash(users.get(username), password):
         return username
+    return None
 
 def handle_win_error_10054(loop, context):
     """

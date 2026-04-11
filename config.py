@@ -7,6 +7,12 @@ def set_media_dir(dir_path):
     global MEDIA_DIR
     MEDIA_DIR = dir_path
 
+# Global flag to disable authentication
+NO_AUTH = False
+def set_no_auth(value: bool):
+    global NO_AUTH
+    NO_AUTH = value
+
 MEDIAS_BASE_DIR = "media_files"
 THUMBNAIL_DIR = path.join(path.dirname(__file__), MEDIAS_BASE_DIR, "thumbnails")
 PREVIEW_DIR = path.join(path.dirname(__file__), MEDIAS_BASE_DIR, "previews")
