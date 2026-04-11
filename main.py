@@ -6,7 +6,7 @@ parser.add_argument('dir', nargs='?', type=str)
 parser.add_argument('--host', '-u', default='0.0.0.0', help="Host to run on (default: 0.0.0.0)")
 parser.add_argument('--port', '-p', type=int, default=80, help="Port to run on (default: 80)")
 parser.add_argument('--dev', action='store_true')
-parser.add_argument('--no-preprocessing', action='store_true')
+parser.add_argument('--preprocessing', '-pr', type=str, choices=['force', 'skip', 'only-thumbnails'], default='force', help="Preprocessing mode: force (default) or skip")
 args = parser.parse_args()
 
 set_media_dir(args.dir)
@@ -21,19 +21,27 @@ if __name__ == '__main__':
     print("Starting StreamLocal...")
     
     # Startup tasks
-    if not args.no_preprocessing:
+    if args.preprocessing == 'skip':
+        print("Skipping preprocessing.")
+    else:
         try:
             from librifygen import generate_previews, generate_thumbnails
             
-            generate_previews(MEDIA_DIR, PREVIEW_DIR)
-            generate_thumbnails(MEDIA_DIR, THUMBNAIL_DIR)
+            if args.preprocessing == 'only-thumbnails':
+                print("Generating thumbnails only...")
+                generate_thumbnails(MEDIA_DIR, THUMBNAIL_DIR)
+            else:
+                print("Generating previews and thumbnails...")
+                generate_previews(MEDIA_DIR, PREVIEW_DIR)
+                generate_thumbnails(MEDIA_DIR, THUMBNAIL_DIR)
+
+            print("Preprocessing completed.")
             
         except ImportError:
             print("Warning: Preview generator not found.")
         except Exception as e:
             print(f"Error during preprocessing: {e}")
-    else:
-        print("Skipping preprocessing.")
+    
     
     HOST =  args.host
     PORT = args.port
