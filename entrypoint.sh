@@ -21,7 +21,7 @@ done
 
 # Determine whether to skip preprocessing based on the argument and system characteristics
 # ARCH x86_64 and Apple Silicon (aarch64 on linuxkit) will run with preprocessing by default
-if [[ "$preprocessing_value" == "skip" || ( -z "$preprocessing_value" && "$ARCH" = "aarch64" && ! "$KERNEL" =~ linuxkit ) ]]; then
+if [[ "$preprocessing_value" == "skip" || -z "$preprocessing_value" && "$ARCH" = "aarch64" && ! "$KERNEL" =~ linuxkit ]]; then
     echo "Preprocessing will be skipped."
     ARGS="/media --preprocessing skip"
 else
